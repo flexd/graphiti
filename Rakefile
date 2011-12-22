@@ -19,7 +19,18 @@ Rake::TestTask.new(:test) do |test|
 end
 
 task :default => :test
-
+namespace :server do
+  desc 'Stop the unicorn server'
+  task :stop do
+    puts "Stopping unicorn: #{`kill -QUIT $(cat $(grep pid /opt/graphiti/config/unicorn.rb| cut -d \ -f 2 | sed "s/^([\"'])(.)\1\$/\2/g"))`}"
+  end
+  task :restart do
+    puts "Restarting unicorn: #{`kill -USR2 $(cat $(grep pid /opt/graphiti/config/unicorn.rb| cut -d \ -f 2 | sed "s/^([\"'])(.)\1\$/\2/g"))`}"
+  end
+  task :start do
+    puts "Starting unicorn: #{`bundle exec unicorn -c config/unicorn.rb -E production -D`}"
+  end
+end
 namespace :graphiti do
 
   desc 'Rebuild Metrics List'
